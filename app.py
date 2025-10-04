@@ -3,9 +3,6 @@ import pandas as pd
 import streamlit as st
 from datetime import time
 
-# Load model
-model = joblib.load("saved_models/D_T_model_pipeline.pkl")
-
 # CSS for full-width layout and mobile responsiveness
 st.markdown("""
     <style>
@@ -163,6 +160,10 @@ with col_result1:
     predict_button = st.button("🚦 Predict Ride Cancellation")
 
 with col_result2:
+
+    # Load model
+    model = joblib.load("saved_models/D_T_model_pipeline.pkl")
+
     # Prediction result displayed to the right of button
     if predict_button:
         user_input = pd.DataFrame([{
