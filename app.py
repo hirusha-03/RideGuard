@@ -6,6 +6,7 @@ from datetime import time
 # Load model
 model = joblib.load("saved_models/D_T_model_pipeline.pkl")
 
+
 # CSS for full-width layout and mobile responsiveness
 st.markdown("""
     <style>
@@ -58,13 +59,26 @@ st.markdown("""
             font-size: 16px !important;
         }
         
-        /* Make button larger */
-        .stButton>button {
-            height: 60px !important;
-            font-size: 20px !important;
-            font-weight: bold !important;
-            padding: 0 40px !important;
-        }
+        //* Stylish Predict Button */
+.stButton>button {
+    width: 100% !important;
+    height: 60px !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    background: linear-gradient(90deg, #00B4DB, #0078D7)  !important;
+    border: none !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+/* Hover effect */
+.stButton>button:hover {
+    background: linear-gradient(90deg, #00B4DB, #0078D7) !important;
+    transform: scale(1.03);
+    cursor: pointer;
+}
+
         
         /* Input labels larger */
         .stTextInput>label, .stNumberInput>label, .stSelectbox>label, 
@@ -150,6 +164,7 @@ with col_result1:
     predict_button = st.button("🚦 Predict Ride Cancellation")
 
 with col_result2:
+
     # Prediction result displayed to the right of button
     if predict_button:
         user_input = pd.DataFrame([{

@@ -3,6 +3,9 @@
 ## Overview
 RideGuard is an intelligent data mining project that leverages machine learning to predict ride cancellations in ride-sharing services. By analyzing historical Uber ride data and various booking parameters, the system provides real-time predictions to help identify rides that are at high risk of cancellation, particularly those initiated by drivers.
 
+## Our focus
+We have mainly focused on customers side in this project where it predicts the chance of the driver to cancel a particular ride. This enhances the customer satisfaction and will further saves their time by notifying them about the cancellation risk by the prediction system we developed.
+
 ## Features
 - **Predictive Analytics**: Uses advanced machine learning algorithms to predict ride cancellation likelihood
 - **Real-time Predictions**: Instant analysis based on booking details, driver ratings, customer ratings, and ride characteristics
