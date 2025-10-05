@@ -3,3 +3,4 @@ joblib==1.5.2
 pandas
 numpy
 streamlit
+category_encoders==2.2.2
