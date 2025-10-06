@@ -2,6 +2,7 @@ import joblib
 import pandas as pd
 import streamlit as st
 from datetime import time
+import base64
 import os
 
 # --------------------------
@@ -21,147 +22,91 @@ else:
 st.set_page_config(page_title="RideGuard - Ride Cancellation Prediction", layout="wide")
 
 # --------------------------
+# 🖼️ Background Image Setup
+# --------------------------
+def add_bg_from_local(image_file):
+    if os.path.exists(image_file):
+        with open(image_file, "rb") as f:
+            encoded_image = base64.b64encode(f.read()).decode()
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("data:image/jpg;base64,{encoded_image}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+add_bg_from_local("bg.jpg")
+
+# --------------------------
 # 🎨 Custom CSS Styling
 # --------------------------
 st.markdown("""
     <style>
-        /* Remove default Streamlit padding and margins */
         .block-container {
             padding-top: 2rem !important;
             padding-bottom: 2rem !important;
             padding-left: 8rem !important;
             padding-right: 8rem !important;
             max-width: 100% !important;
+            background: rgba(0, 0, 0, 0.6);  /* Dark overlay for better text contrast */
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
 
-        /* Remove extra spacing */
-        .css-1d391kg, .css-18e3th9 {
-            padding: 0 !important;
-        }
-
-        /* Center title section */
         .title-section {
             text-align: center !important;
-            margin: 0 1rem !important;
+            color: #2E86C1;
         }
 
-        /* Make all inputs larger and full width */
-        .stTextInput>div>div>input,
-        .stNumberInput>div>div>input,
-        .stTimeInput>div>div>input {
-            width: 100% !important;
-            height: 50px !important;
-            font-size: 16px !important;
-            padding: 12px !important;
+        h1, h5 {
+            font-family: 'Inter', sans-serif !important;
+            color: white !important; /* Ensure heading is white for visibility */
         }
 
-        /* Make selectbox larger */
-        .stSelectbox>div>div {
-            height: 50px !important;
-        }
-
-        .stSelectbox>div>div>div {
-            padding: 12px !important;
-            font-size: 16px !important;
-        }
-
-        /* Make slider larger */
-        .stSlider>div>div>div>div {
-            height: 8px !important;
-        }
-
-        .stSlider p {
-            font-size: 16px !important;
-        }
-
-        /* Stylish Predict Button */
         .stButton>button {
-            width: 100% !important;
-            height: 60px !important;
-            font-size: 20px !important;
-            font-weight: 600 !important;
-            color: white !important;
-            background: linear-gradient(90deg, #00B4DB, #0078D7)  !important;
-            border: none !important;
-            border-radius: 8px !important;
-            transition: all 0.3s ease-in-out !important;
+            width: 100%;
+            height: 60px;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, #00B4DB, #0078D7);
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
         }
 
-        /* Hover effect */
         .stButton>button:hover {
-            background: linear-gradient(90deg, #00B4DB, #0078D7) !important;
-            transform: scale(1.03);
-            cursor: pointer;
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #0098DB, #0068D7);
         }
 
-        /* Input labels larger */
-        .stTextInput>label, .stNumberInput>label, .stSelectbox>label, 
-        .stSlider>label, .stTimeInput>label {
-            font-size: 16px !important;
-            font-weight: 500 !important;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .block-container {
-                padding-left: 0.5rem !important;
-                padding-right: 0.5rem !important;
-            }
-
-            .title-section h1 {
-                font-size: 24px !important;
-            }
-
-            .title-section h5 {
-                font-size: 14px !important;
-            }
-
-            .stButton>button {
-                font-size: 18px !important;
-                padding: 0 20px !important;
-            }
-        }
-
-        /* Remove column gaps */
-        [data-testid="column"] {
-            padding: 0 0.25rem !important;
-        }
-
-        /* -------------------- Prediction Result Styling -------------------- */
         .result-cancellation {
-            background: linear-gradient(45deg, #ff4f4f, #e63946); /* Strong red gradient */
+            background: linear-gradient(45deg, #ff4f4f, #e63946);
             border-left: 6px solid #e63946;
             padding: 1rem;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(230,57,70,0.2);
             text-align: center;
-            color: white !important;
-            font-size: 18px !important;
+            color: white;
         }
 
         .result-success {
-            background: linear-gradient(45deg, #2e7d32, #388e3c); /* Dark green gradient */
+            background: linear-gradient(45deg, #2e7d32, #388e3c);
             border-left: 6px solid #2e7d32;
             padding: 1rem;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(56,176,0,0.2);
             text-align: center;
-            color: white !important;
-            font-size: 18px !important;
+            color: white;
         }
 
-        .result-cancellation h3, .result-success h3 {
-            margin-bottom: 10px;
-            font-size: 22px !important;
-            font-weight: 700 !important;
-        }
-
-        .result-cancellation p, .result-success p {
-            font-size: 16px !important;
-            font-weight: 500 !important;
-        }
-
-        /* Stylish Divider between Results */
         .divider {
             margin: 2rem 0;
             height: 2px;
@@ -171,23 +116,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
-# Title (centered with small gap on sides)
-st.markdown("""
-    <div class='title-section'>
-        <h1 style='color:#2E86C1;'>🚖 RideGuard - Ride Cancellation Predictor</h1>
-        <h5 style='color:gray;'>Predict if a ride is likely to be cancelled or not based on Booking Details</h5>
-    </div>
-""", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
 # --------------------------
-# 🏁 Title Section
+# 🏁 Title
 # --------------------------
 st.markdown("""
     <div class='title-section'>
-        <h1>🚖 RideGuard</h1>
+        <h1>🚖 RideGuard - Ride Cancellation Predictor</h1>
         <h5>Predict if a ride is likely to be cancelled based on booking details</h5>
     </div>
 """, unsafe_allow_html=True)
@@ -198,7 +132,7 @@ st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 # 📝 Input Fields
 # --------------------------
 st.markdown("### 📝 Core Ride Details")
-col1, col2= st.columns(2)
+col1, col2 = st.columns(2)
 
 with col1:
     pickup_location = st.text_input("Pickup Location", placeholder="e.g., Downtown")
@@ -235,7 +169,7 @@ with col6:
     avg_ctat = st.number_input("Avg CTAT (min)", min_value=0.0, step=0.01, format="%.2f")
 
 # --------------------------
-# 🚦 Prediction Section
+# 🚦 Prediction
 # --------------------------
 st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 predict_button = st.button("🚦 Predict Ride Cancellation")
@@ -258,18 +192,17 @@ if predict_button and model:
         "Customer Rating": customer_rating
     }])
 
-    # Prediction
     prob = model.predict_proba(user_input)[0][1]
     prediction = int(prob >= 0.4)
     confidence = max(prob, 1 - prob) * 100
 
     if prediction == 1:
         st.markdown(
-            f"<div class='result-cancellation'><h3>❌ Ride Likely CANCELLED</h3><p>Probability of cancellation: {prob:.2f}<br>Confidence: {confidence:.1f}%</p></div>",
+            f"<div class='result-cancellation'><h3>❌ Ride Likely to be CANCELLED</h3></div>",
             unsafe_allow_html=True)
     else:
         st.markdown(
-            f"<div class='result-success'><h3>✅ Ride Unlikely to be Cancelled</h3><p>Probability of not cancellation: {1 - prob:.2f}<br>Confidence: {confidence:.1f}%</p></div>",
+            f"<div class='result-success'><h3>✅ Ride Unlikely to be Cancelled</h3></div>",
             unsafe_allow_html=True)
 
 elif predict_button and not model:
