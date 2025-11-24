@@ -5,9 +5,6 @@ from datetime import time
 import base64
 import os
 
-# --------------------------
-# 🎯 Load the Trained Model
-# --------------------------
 MODEL_PATH = "saved_models/Decision_Tree_pipeline.pkl"
 if os.path.exists(MODEL_PATH):
     model = joblib.load(MODEL_PATH)
