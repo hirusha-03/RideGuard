@@ -23,4 +23,4 @@ We have mainly focused on customers side in this project where it predicts the c
 - **Frontend**: Streamlit for interactive web application
 - **Data Processing**: Pandas for data manipulation and analysis
 - **Model Persistence**: Joblib for model serialization
-- **Python Libraries**: NumPy, Scikit-learn
+- **Python Libraries**: NumPy, Scikit-learn were used
